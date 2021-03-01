@@ -41,6 +41,17 @@ function UpdateUI() {
     document.getElementById("upg1").innerHTML = `Cost: ${notate(player.upg1.cost)} <br> Level: ${notate(player.upg1.level)}`
 }
 
+function saveGame() {
+	saveData = player;
+	localStorage.saveData = JSON.stringify(saveData);
+}
+
+function loadGame() {
+    var saveData = JSON.parse(localStorage.saveData || null) || {};
+    save = player;
+    return saveData.obj || "default";
+}
+
 var mainGameLoop = window.setInterval(function () {
     click()
 }, 20);
