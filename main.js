@@ -27,6 +27,9 @@ function IncreaseMultiplier1() {
     if (Decimal.compare(player.money.total, player.upg1.cost) >= 0) {
         player.money.total = Decimal.sub(player.money.total, player.upg1.cost);
         player.upg1.cost = Decimal.pow(player.upg1.cost, 1.048);
+        if (Decimal.compare(player.upg1.level, 25) >= 0) {
+                    player.upg1.cost = Decimal.pow(player.upg1.cost, 1.072);
+        }
         player.upg1.level = Decimal.add(player.upg1.level, 1);
         player.money.increase = Decimal.times(player.money.increase, 1.08)
     }
