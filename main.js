@@ -37,7 +37,7 @@ function IncreaseMultiplier1() {
 
 function UpdateUI() {
     document.getElementById("money").innerHTML = `You have ${notate(player.money.total)}${currency}.`
-    document.getElementById("mps").innerHTML = `${notate2(Decimal.times(player.money.onclick, 50))}${currency} per second (+${notate2(Decimal.pow(player.money.totalincrease, 50).sub(1).times(100))}%)`
+    document.getElementById("mps").innerHTML = `${notate2(Decimal.times(player.money.onclick, 50))}${currency} per second (+${notate2(Decimal.pow(player.money.totalincrease, 50).sub(1).times(100))}%/s)`
     document.getElementById("upg1").innerHTML = `Cost: ${notate(player.upg1.cost)} <br> Level: ${notate(player.upg1.level)}`
 }
 
