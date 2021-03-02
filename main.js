@@ -6,7 +6,7 @@ var player = {
         totalincrease: 1.00003
     },
     upg1: {
-        cost: 100,
+        cost: 50,
         level: 0
     },
 }
