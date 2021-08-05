@@ -70,13 +70,6 @@ function notate(n) {
 function notate2(n) {
     var e = n.exponent;
     var m = n.mantissa
-    if (e < 3) return (m * Math.pow(10, e)).toPrecision(4);
-    return `${m.toFixed(2)}e${e}`;
-}
-
-function notate3(n) {
-    var e = n.exponent;
-    var m = n.mantissa
     if (e < 3) return (m * Math.pow(10, e)).toPrecision(2);
     return `${m.toFixed(2)}e${e}`;
 }
