@@ -1,76 +1,160 @@
-var player = {
-    money: {
-        total: 0,
-        onclick: 0.02,
-        increase: 0.00003,
-        totalincrease: 1.00003
-    },
-    upg1: {
-        cost: 50,
-        level: 0
-    },
-}
+class Player {
+    constructor(data) {
+        this.times = data?.times || 0;
+        this.time = data?.time || 0;
 
-var currency = " points";
+        this.money = {
+            total: data?.money?.total || 0,
+            receive: data?.money?.receive || 1,
+            multiplier: data?.money?.multiplier || 1.01,
+            chance: data?.money?.chance || 95,
+            sleep: data?.money?.sleep || 3000,
+        };
+        
+        this.result = data?.result || 0;
 
-document.getElementById('currency').addEventListener('keyup', e => {
-    currency = e.target.value
-})
+        this.upgrade1 = {
+            cost: data?.upgrade1?.cost || 1,
+            level: data?.upgrade1?.level || 0,
+        };
 
-function click() {
-    player.money.totalincrease = Decimal.add(player.money.increase, 1);
-    player.money.onclick = Decimal.times(player.money.onclick, player.money.totalincrease);
-    player.money.total = Decimal.add(player.money.total, player.money.onclick);
-}
+        this.upgrade2 = {
+            cost: data?.upgrade2?.cost || 10,
+            level: data?.upgrade2?.level || 0,
+            effect: data?.upgrade2?.effect || 3000,
+        };
 
-function IncreaseMultiplier1() {
-    if (Decimal.compare(player.money.total, player.upg1.cost) >= 0) {
-        player.money.total = Decimal.sub(player.money.total, player.upg1.cost);
-        player.upg1.cost = Decimal.pow(player.upg1.cost, 1.048);
-        if (Decimal.compare(player.upg1.level, 25) >= 0) {
-                    player.upg1.cost = Decimal.pow(player.upg1.cost, 1.072);
-        }
-        player.upg1.level = Decimal.add(player.upg1.level, 1);
-        player.money.increase = Decimal.times(player.money.increase, 1.08)
-    }
-}
+        this.upgrade3 = {
+            bought: data?.upgrade3?.bought || false,
+        };
 
-function UpdateUI() {
-    document.getElementById("money").innerHTML = `You have ${notate(player.money.total)}${currency}.`
-    document.getElementById("mps").innerHTML = `${notate2(Decimal.times(player.money.onclick, 50))}${currency} per second (+${notate2(Decimal.pow(player.money.totalincrease, 50).sub(1).times(100))}%/s)`
-    document.getElementById("upg1").innerHTML = `Cost: ${notate(player.upg1.cost)} <br> Level: ${notate(player.upg1.level)}`
-}
+        this.upgrade4 = {
+            cost: data?.upgrade4?.cost || 600,
+            level: data?.upgrade4?.level || 0,
+        };
 
-function saveGame() {
-	saveData = player;
-	localStorage.saveData = JSON.stringify(saveData);
-}
+        this.upgrade5 = {
+            cost: data?.upgrade5?.cost || 1000000,
+            level: data?.upgrade5?.level || 0,
+        };
+    };
+};
 
-function loadGame() {
-    var saveData = JSON.parse(localStorage.saveData || null) || {};
-    save = player;
-    return saveData.obj || "default";
-}
+var player = new Player();
 
-var mainGameLoop = window.setInterval(function () {
-    click()
-}, 20);
+var mainGameLoop = window.setInterval(function() {
+    if (OmegaNum.cmp(player.money.sleep, 0) > 0) {
+        player.money.sleep = OmegaNum.sub(player.money.sleep, 7);
+    };
+    if (isNaN(player.money.sleep)) {
+        player.money.sleep = new OmegaNum(player.upgrade2.effect);
+    };
+    if (OmegaNum.cmp(player.money.sleep, 0) < 0) {
+        player.money.sleep = 0;
+    };
+    player.upgrade2.effect = OmegaNum.pow(3000, OmegaNum.pow(0.994, player.upgrade2.level));
+    if (player.upgrade3.bought == true) {
+        add();
+    };
+    if (isNaN(player.upgrade4.cost)) {
+        player.upgrade4.cost = player.upgrade4.cost.array[0];
+    };
+    player.time = OmegaNum.add(player.time, 0.007);
+}, 7);
 
-var mainGameLoop = window.setInterval(function () {
-    UpdateUI()
-}, 1);
+function add() {
+    if (OmegaNum.cmp(player.money.sleep, 0) == 0) {
+        player.result = Math.random() * 100;
+        player.money.sleep = new OmegaNum(player.upgrade2.effect);
+        player.times += 1;
+        if (OmegaNum.cmp(player.result, player.money.chance) >= 0) {
+            player.money.total = OmegaNum.add(player.money.total, player.money.receive);
+            player.money.receive = OmegaNum.times(player.money.receive, player.money.multiplier);
+        };
+    };
+};
 
-function notate(n) {
-    var e = n.exponent;
-    var m = n.mantissa
-    if (e < 4) return (m * Math.pow(10, e)).toFixed(0);
-    return `${m.toPrecision(3)}e${e}`;
-}
+function upgrade1() {
+    if (OmegaNum.cmp(player.money.total, player.upgrade1.cost) >= 0) {
+        player.money.total = OmegaNum.sub(player.money.total, player.upgrade1.cost);
+        player.upgrade1.cost = OmegaNum.pow(player.upgrade1.cost, 1.06).times(1.009);
+        player.money.chance = OmegaNum.div(player.money.chance, OmegaNum.add(OmegaNum.div(0.02, OmegaNum.add(OmegaNum.div(player.upgrade1.level, 20), 1)), 1));
+        player.upgrade1.level = Math.floor(OmegaNum.add(player.upgrade1.level, 1)).toLocaleString("pt-PT");
+    };
+};
 
-function notate2(n) {
-    var e = n.exponent;
-    var m = n.mantissa
-    if (e < 3) return (m * Math.pow(10, e)).toPrecision(2);
-    return `${m.toFixed(2)}e${e}`;
-}
+function upgrade2() {
+    if (OmegaNum.cmp(player.money.total, player.upgrade2.cost) >= 0) {
+        player.money.total = OmegaNum.sub(player.money.total, player.upgrade2.cost);
+        player.upgrade2.cost = OmegaNum.pow(player.upgrade2.cost, 1.075);
+        player.upgrade2.level = Math.floor(OmegaNum.add(player.upgrade2.level, 1)).toLocaleString("pt-PT");
+    };
+};
 
+function upgrade3() {
+    if (OmegaNum.cmp(player.money.total, 1000) >= 0) {
+        if (player.upgrade3.bought == false) {
+            player.money.total = player.money.total = OmegaNum.sub(player.money.total, 1000);
+            player.upgrade3.bought = true
+        };
+    };
+};
+
+function upgrade4() {
+    if (OmegaNum.cmp(player.time, player.upgrade4.cost) >= 0) {
+        player.upgrade4.level += 1;
+        player.upgrade4.cost = OmegaNum.mul(player.upgrade4.cost, 1.02).add(60);
+        player.money.receive = OmegaNum.mul(player.money.receive, 1.02);
+    };
+};
+
+function upgrade5() {
+    if (OmegaNum.cmp(player.time, player.upgrade5.cost) >= 0) {
+        player.money.total = OmegaNum.sub(player.money.total, player.upgrade5.cost);
+        player.upgrade5.level += 1;
+        player.upgrade5.cost = OmegaNum.mul(player.upgrade5.cost, 10)
+        player.money.receive = OmegaNum.mul(player.money.receive, 2);
+    };
+};
+
+function reset() {
+    var r = confirm("Are you sure do you want to reset?");
+        if (r == true) {
+        player.time = 0;
+        player.money.total = 0;
+        player.money.receive = 1;
+        player.money.multiplier = 1.01;
+        player.money.chance = 95;
+        player.money.sleep = 3000;
+        player.result = 0;
+        player.upgrade1.cost = 1;
+        player.upgrade1.level = 0;
+        player.upgrade2.cost = 10;
+        player.upgrade2.level = 0;
+        player.upgrade2.effect = 3000;
+        player.upgrade3.bought = false;
+        player.upgrade4.cost = 600;
+        player.upgrade4.level = 0;
+        document.getElementById("upgrade3").style.backgroundColor = `white`;
+        player.times = 0;
+        player.time = 0;
+        player.upgrade5.cost = 1e6;
+        player.upgrade5.level = 0;
+    };
+};
+
+function Save() {
+    localStorage.player = JSON.stringify(player);
+};
+
+function Load() {
+    player = new Player(JSON.parse(localStorage.player));
+    console.log("Save loaded");
+    return player.obj || "default";
+};
+
+var mainGameLoop = window.setInterval(function() {
+    Save();
+}, 3 * 1000);
+
+Load();
